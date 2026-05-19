@@ -38,7 +38,16 @@ If that works, the app succeeds. Everything else is supporting infrastructure.
 - **Today screen**: where she is in cycle, today's fertility status, predicted fertile window
 - **Calendar view**: month view showing periods, fertile window, events, symptoms
 - **Charts / graphical view**: cycle length over time, symptom frequency, fertile-window history, LH/temp event timeline relative to cycle days — visual patterns she can scan in seconds
-- **PDF export for her fertility doctor**: one-tap export that produces a clean, doctor-friendly PDF report (cycle history table, symptom log, event log, charts). She brings it to appointments.
+- **PDF export for her fertility doctor**: one-tap export that produces a clean, doctor-friendly PDF report (cycle history table, symptom log, event log, charts, *plus the appointment-notes log*). She brings it to appointments.
+
+### Appointment notes (fertility clinic)
+- She has a first consultation with **CNY Fertility** in a few weeks; follow-ups will follow
+- A simple "Appointments" section where she can:
+  - Create an appointment entry (date, clinic name pre-filled "CNY Fertility", appointment type — e.g. "Initial consultation", "Follow-up", "Ultrasound", "Bloodwork")
+  - Take free-text notes during or after the appointment (multi-line, markdown-friendly is fine, plain textarea is also fine)
+  - Edit notes after the fact (she may add context later)
+- v1 starts with just the initial consultation; supporting any number of follow-up appointments is the same code path — no special-casing the first one
+- Appointment notes are included in the PDF export so the doctor (and she) can see continuity across visits
 
 ## What The App Does In The Background
 
@@ -75,6 +84,7 @@ If that works, the app succeeds. Everything else is supporting infrastructure.
   - **Notifications**: Pushover (developer has Pushover keys ready to provide)
   - **Auth**: simple shared-password gate (single-user app — no need for full identity)
 - **Honest predictions over impressive predictions**: better to say "we need more data" than to fake precision
+- **Design via the `frontend-design:frontend-design` skill**: when we hit the UI/visual design phase, invoke that skill rather than freelancing styles. It produces a coherent visual system (typography, spacing, color, component patterns) that we apply across the today screen, calendar, charts, symptom log, appointments, and PDF — instead of one-off Tailwind choices per screen.
 
 ## Success Criteria
 
