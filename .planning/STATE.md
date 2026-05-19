@@ -36,7 +36,7 @@
 - [x] **Initial password** — chosen by developer; bcrypt-hashed at setup time and written to `app_config.password_hash`. Never persisted in plaintext anywhere (not in git, not in env, not in STATE.md).
 - [x] **Domain** — default `*.vercel.app` is fine for v1.
 - [ ] **Pushover `PUSHOVER_USER`** — **BLOCKER for Phase 5 only**. She doesn't have a user key yet. Solution: she installs Pushover on her phone → she gets her own user key → developer adds it to Vercel env before Phase 5. Phase 5 infrastructure can be scaffolded in parallel; the actual send won't work until the user key is set.
-- [ ] **Pushover `PUSHOVER_TOKEN`** — developer creates a new Pushover app at https://pushover.net/apps/build named "Ovulation Tracker" and provides the token. Can be done now, doesn't require her phone.
+- [x] **Pushover `PUSHOVER_TOKEN`** — stored in 1P as `op://Development/service.ovulation-tracker.pushover-app-token/password` (item id `nclp2yghof6r4go2tlx6rmlwga`). Will be read inline by `op` during Vercel env setup in Phase 1.5 / Phase 5.
 
 ## Baserow Schema (provisioned 2026-05-19)
 
