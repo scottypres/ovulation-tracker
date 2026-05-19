@@ -1,26 +1,217 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Cycle-specific tokens (universal cycle-app conventions, calm tones) */
+  --color-period: var(--period);
+  --color-period-soft: var(--period-soft);
+  --color-fertile: var(--fertile);
+  --color-fertile-soft: var(--fertile-soft);
+  --color-ovulation-predicted: var(--ovu-pred);
+  --color-ovulation-confirmed: var(--ovu-conf);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ───────────────────────────────────────────────────────────────────
+   Design system — "Quiet morning herbal tea"
+
+   A calm, warm, mobile-first fertility tracker. Not pink, not clinical
+   alarm-red, not corporate medical. A small still life on a kitchen
+   counter at sunrise.
+
+   Palette:
+     - background  cream paper (warm off-white)
+     - card        rice paper (slightly raised cream)
+     - text        warm slate (the color of wet stone, not black)
+     - accent      sage (eucalyptus tea, not lab green)
+     - period      dusty terracotta (autumn clay, not blood red)
+     - fertile     soft moss (still life with herbs)
+     - predicted   muted indigo (steam rising at dawn)
+     - confirmed   warm honey gold (when the certainty arrives)
+
+   Typography:
+     - Display  Fraunces  — serif with optical sizing, soft and humane
+     - Body     Geist     — clean modern sans, no swagger
+
+   Spacing rhythm: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
+   Radii: generous (12 / 16 / 24 / 32). No sharp corners anywhere.
+   Shadows: low-spread warm shadows; never grayscale.
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Cream backdrop, slightly warm — paper before ink */
+  --background: oklch(0.973 0.008 80);
+  --foreground: oklch(0.30 0.018 250);
+
+  /* Card surface — rice paper raised over cream */
+  --card: oklch(0.985 0.006 80);
+  --card-foreground: oklch(0.30 0.018 250);
+  --popover: oklch(0.985 0.006 80);
+  --popover-foreground: oklch(0.30 0.018 250);
+
+  /* Primary — deep warm slate (interactive ink) */
+  --primary: oklch(0.32 0.020 250);
+  --primary-foreground: oklch(0.97 0.006 80);
+
+  /* Secondary — warm beige */
+  --secondary: oklch(0.93 0.012 80);
+  --secondary-foreground: oklch(0.32 0.020 250);
+
+  /* Muted — softer cream */
+  --muted: oklch(0.94 0.010 80);
+  --muted-foreground: oklch(0.50 0.014 250);
+
+  /* Accent — eucalyptus sage */
+  --accent: oklch(0.86 0.040 145);
+  --accent-foreground: oklch(0.30 0.040 145);
+
+  --destructive: oklch(0.58 0.140 25);
+  --border: oklch(0.90 0.010 80);
+  --input: oklch(0.92 0.010 80);
+  --ring: oklch(0.72 0.060 145);
+
+  /* Cycle palette */
+  --period: oklch(0.62 0.110 35);            /* dusty terracotta */
+  --period-soft: oklch(0.92 0.045 35);       /* terracotta wash */
+  --fertile: oklch(0.70 0.090 145);          /* moss */
+  --fertile-soft: oklch(0.92 0.045 145);     /* moss wash */
+  --ovu-pred: oklch(0.62 0.060 265);         /* steam-blue indigo */
+  --ovu-conf: oklch(0.74 0.090 85);          /* warm honey */
+
+  /* Chart palette (soft, ordered) */
+  --chart-1: oklch(0.70 0.090 145);
+  --chart-2: oklch(0.62 0.110 35);
+  --chart-3: oklch(0.62 0.060 265);
+  --chart-4: oklch(0.74 0.090 85);
+  --chart-5: oklch(0.55 0.020 250);
+
+  --radius: 0.875rem;
+
+  --sidebar: oklch(0.97 0.008 80);
+  --sidebar-foreground: oklch(0.30 0.018 250);
+  --sidebar-primary: oklch(0.32 0.020 250);
+  --sidebar-primary-foreground: oklch(0.97 0.006 80);
+  --sidebar-accent: oklch(0.93 0.012 80);
+  --sidebar-accent-foreground: oklch(0.32 0.020 250);
+  --sidebar-border: oklch(0.90 0.010 80);
+  --sidebar-ring: oklch(0.72 0.060 145);
+}
+
+.dark {
+  --background: oklch(0.20 0.012 250);
+  --foreground: oklch(0.94 0.006 80);
+  --card: oklch(0.24 0.012 250);
+  --card-foreground: oklch(0.94 0.006 80);
+  --popover: oklch(0.24 0.012 250);
+  --popover-foreground: oklch(0.94 0.006 80);
+  --primary: oklch(0.86 0.040 145);
+  --primary-foreground: oklch(0.24 0.020 250);
+  --secondary: oklch(0.30 0.012 250);
+  --secondary-foreground: oklch(0.94 0.006 80);
+  --muted: oklch(0.30 0.012 250);
+  --muted-foreground: oklch(0.70 0.010 80);
+  --accent: oklch(0.36 0.040 145);
+  --accent-foreground: oklch(0.94 0.006 80);
+  --destructive: oklch(0.68 0.140 25);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.70 0.060 145);
+
+  --period: oklch(0.66 0.110 35);
+  --period-soft: oklch(0.38 0.060 35);
+  --fertile: oklch(0.74 0.090 145);
+  --fertile-soft: oklch(0.36 0.060 145);
+  --ovu-pred: oklch(0.66 0.060 265);
+  --ovu-conf: oklch(0.78 0.090 85);
+
+  --chart-1: oklch(0.74 0.090 145);
+  --chart-2: oklch(0.66 0.110 35);
+  --chart-3: oklch(0.66 0.060 265);
+  --chart-4: oklch(0.78 0.090 85);
+  --chart-5: oklch(0.72 0.020 250);
+
+  --sidebar: oklch(0.24 0.012 250);
+  --sidebar-foreground: oklch(0.94 0.006 80);
+  --sidebar-primary: oklch(0.86 0.040 145);
+  --sidebar-primary-foreground: oklch(0.24 0.020 250);
+  --sidebar-accent: oklch(0.30 0.012 250);
+  --sidebar-accent-foreground: oklch(0.94 0.006 80);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.70 0.060 145);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  html {
+    @apply font-sans;
+  }
+  h1, h2, h3, .display {
+    font-family: var(--font-display), Georgia, serif;
+    font-feature-settings: "ss01";
+    letter-spacing: -0.01em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Subtle paper texture — a whisper, not a roar */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(at 30% 20%, oklch(0.86 0.04 145 / 0.10), transparent 50%),
+    radial-gradient(at 80% 90%, oklch(0.74 0.09 85 / 0.06), transparent 50%);
+  z-index: 0;
 }
+body > * { position: relative; z-index: 1; }
