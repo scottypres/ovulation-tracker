@@ -37,7 +37,8 @@ If that works, the app succeeds. Everything else is supporting infrastructure.
 ### Viewing
 - **Today screen**: where she is in cycle, today's fertility status, predicted fertile window
 - **Calendar view**: month view showing periods, fertile window, events, symptoms
-- **History/trends**: cycle length over time, symptom frequency
+- **Charts / graphical view**: cycle length over time, symptom frequency, fertile-window history, LH/temp event timeline relative to cycle days — visual patterns she can scan in seconds
+- **PDF export for her fertility doctor**: one-tap export that produces a clean, doctor-friendly PDF report (cycle history table, symptom log, event log, charts). She brings it to appointments.
 
 ## What The App Does In The Background
 
@@ -61,7 +62,7 @@ If that works, the app succeeds. Everything else is supporting infrastructure.
 - ❌ Apple HealthKit integration (out of scope for v1)
 - ❌ Husband-facing notifications or coordination features
 - ❌ Avoiding-pregnancy (FAM/NFP) features — this app is for TTC, not contraception
-- ❌ Medical-grade claims, export-to-OB-GYN reporting (could come later)
+- ❌ Medical-grade claims or diagnostic conclusions (the PDF export is a *data summary* for her doctor, not a diagnosis)
 - ❌ Public hosting / marketing / app store distribution
 
 ## Constraints
@@ -83,5 +84,7 @@ The app is successful when:
 - [ ] The today-view tells her clearly whether she's in/near her fertile window
 - [ ] After 2-3 cycles of data, fertile-window predictions are based on *her* history, not averages
 - [ ] She receives a Pushover notification 1-2 days before predicted fertile window begins
+- [ ] She can view her cycle data in charts (cycle length over time, event timeline, symptom frequency) on her phone
+- [ ] She can tap "Export PDF" and get a clean, doctor-ready report she can hand or email to her fertility doctor
 - [ ] All data lives in Baserow, accessible to the developer for inspection / migration / backup
 - [ ] No third-party trackers, ads, or analytics ever touch the app
