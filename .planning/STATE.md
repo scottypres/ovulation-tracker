@@ -27,20 +27,16 @@
 | 4 | Charts + Doctor PDF + Backup | not started |
 | 5 | Pushover Notifications | not started |
 
-## Credentials & Inputs Needed From User Before Phase 1 Executes
+## Credentials & Inputs — Resolved 2026-05-19
 
-The husband (developer) needs to provide / confirm before we can scaffold:
-
-- [ ] **GitHub repo decision** — keep `ovulation-tracker` local-only? Or push to a private GitHub repo? Vercel deploys from Git.
-- [ ] **Vercel project name** — default is `ovulation-tracker`.
-- [ ] **Baserow** — confirm the existing Development workspace is where we create the database, or specify another. (Will use Baserow MCP `list_databases` to confirm.)
-- [ ] **Baserow API token** — needs `read+write` scope on the new database. To be stored in Vercel as `BASEROW_API_TOKEN`.
-- [ ] **Pushover credentials** — developer said he has them ready:
-  - `PUSHOVER_TOKEN` (app token — one per app)
-  - `PUSHOVER_USER` (her user/group key — *not* his)
-- [ ] **Her timezone** — for the daily cron (e.g. `America/New_York`). Stored in `app_config`.
-- [ ] **Initial password for her** — chosen by the husband, bcrypt-hashed at setup time, written to `app_config`.
-- [ ] **Custom domain?** — or use the default `*.vercel.app`? (Recommend default for v1; a real domain is fine if he wants it.)
+- [x] **GitHub** — push to a private GitHub repo. Repo name: `ovulation-tracker`.
+- [x] **Vercel project name** — `ovulation-tracker`. Deploy via Vercel MCP.
+- [x] **Baserow** — create a new database in the existing 1Password-managed Baserow workspace. API token lives in 1P (Development vault).
+- [x] **Her timezone** — `America/New_York`. Stored in `app_config.timezone`.
+- [x] **Initial password** — chosen by developer; bcrypt-hashed at setup time and written to `app_config.password_hash`. Never persisted in plaintext anywhere (not in git, not in env, not in STATE.md).
+- [x] **Domain** — default `*.vercel.app` is fine for v1.
+- [ ] **Pushover `PUSHOVER_USER`** — **BLOCKER for Phase 5 only**. She doesn't have a user key yet. Solution: she installs Pushover on her phone → she gets her own user key → developer adds it to Vercel env before Phase 5. Phase 5 infrastructure can be scaffolded in parallel; the actual send won't work until the user key is set.
+- [ ] **Pushover `PUSHOVER_TOKEN`** — developer creates a new Pushover app at https://pushover.net/apps/build named "Ovulation Tracker" and provides the token. Can be done now, doesn't require her phone.
 
 ## Decisions Locked
 
