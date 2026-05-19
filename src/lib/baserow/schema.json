@@ -1,0 +1,175 @@
+{
+  "database_id": 283,
+  "base_url": "https://baserow.serenadesongs.com",
+  "tables": {
+    "app_config": {
+      "table_id": 916,
+      "fields": {
+        "key": {
+          "id": 9039,
+          "type": "text",
+          "primary": true,
+          "api_name": "field_9039"
+        },
+        "value": {
+          "id": 9042,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9042"
+        }
+      }
+    },
+    "events": {
+      "table_id": 917,
+      "fields": {
+        "type": {
+          "id": 9043,
+          "type": "single_select",
+          "primary": true,
+          "api_name": "field_9043"
+        },
+        "occurred_on": {
+          "id": 9046,
+          "type": "date",
+          "primary": false,
+          "api_name": "field_9046"
+        },
+        "notes": {
+          "id": 9047,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9047"
+        },
+        "created_at": {
+          "id": 9048,
+          "type": "created_on",
+          "primary": false,
+          "api_name": "field_9048"
+        }
+      }
+    },
+    "cycles": {
+      "table_id": 918,
+      "fields": {
+        "start_date": {
+          "id": 9049,
+          "type": "date",
+          "primary": true,
+          "api_name": "field_9049"
+        },
+        "end_date": {
+          "id": 9052,
+          "type": "date",
+          "primary": false,
+          "api_name": "field_9052"
+        },
+        "length_days": {
+          "id": 9053,
+          "type": "number",
+          "primary": false,
+          "api_name": "field_9053"
+        },
+        "lh_surge_on": {
+          "id": 9054,
+          "type": "date",
+          "primary": false,
+          "api_name": "field_9054"
+        },
+        "temp_rise_on": {
+          "id": 9055,
+          "type": "date",
+          "primary": false,
+          "api_name": "field_9055"
+        },
+        "notes": {
+          "id": 9056,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9056"
+        }
+      }
+    },
+    "symptoms": {
+      "table_id": 919,
+      "fields": {
+        "name": {
+          "id": 9057,
+          "type": "text",
+          "primary": true,
+          "api_name": "field_9057"
+        },
+        "category": {
+          "id": 9060,
+          "type": "single_select",
+          "primary": false,
+          "api_name": "field_9060"
+        },
+        "severity": {
+          "id": 9061,
+          "type": "single_select",
+          "primary": false,
+          "api_name": "field_9061"
+        },
+        "logged_at": {
+          "id": 9062,
+          "type": "date",
+          "primary": false,
+          "api_name": "field_9062"
+        },
+        "notes": {
+          "id": 9063,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9063"
+        },
+        "custom": {
+          "id": 9064,
+          "type": "boolean",
+          "primary": false,
+          "api_name": "field_9064"
+        }
+      }
+    },
+    "appointments": {
+      "table_id": 920,
+      "fields": {
+        "occurred_on": {
+          "id": 9065,
+          "type": "date",
+          "primary": true,
+          "api_name": "field_9065"
+        },
+        "clinic_name": {
+          "id": 9068,
+          "type": "text",
+          "primary": false,
+          "api_name": "field_9068"
+        },
+        "appointment_type": {
+          "id": 9069,
+          "type": "single_select",
+          "primary": false,
+          "api_name": "field_9069"
+        },
+        "notes": {
+          "id": 9070,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9070"
+        },
+        "created_at": {
+          "id": 9071,
+          "type": "created_on",
+          "primary": false,
+          "api_name": "field_9071"
+        },
+        "updated_at": {
+          "id": 9072,
+          "type": "last_modified",
+          "primary": false,
+          "api_name": "field_9072"
+        }
+      }
+    }
+  }
+}

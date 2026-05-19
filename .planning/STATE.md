@@ -38,6 +38,23 @@
 - [ ] **Pushover `PUSHOVER_USER`** — **BLOCKER for Phase 5 only**. She doesn't have a user key yet. Solution: she installs Pushover on her phone → she gets her own user key → developer adds it to Vercel env before Phase 5. Phase 5 infrastructure can be scaffolded in parallel; the actual send won't work until the user key is set.
 - [ ] **Pushover `PUSHOVER_TOKEN`** — developer creates a new Pushover app at https://pushover.net/apps/build named "Ovulation Tracker" and provides the token. Can be done now, doesn't require her phone.
 
+## Baserow Schema (provisioned 2026-05-19)
+
+Self-hosted instance: `https://baserow.serenadesongs.com` — workspace 118.
+Database: `ovulation-tracker` (id=283).
+
+Full ID map is in `src/lib/baserow/schema.json`. Summary:
+
+| Table | id | Primary | Other fields |
+|---|---|---|---|
+| `app_config` | 916 | `key` (text, 9039) | `value` (long_text, 9042) |
+| `events` | 917 | `type` (single_select, 9043) | `occurred_on` (9046), `notes` (9047), `created_at` (9048) |
+| `cycles` | 918 | `start_date` (date, 9049) | `end_date` (9052), `length_days` (9053), `lh_surge_on` (9054), `temp_rise_on` (9055), `notes` (9056) |
+| `symptoms` | 919 | `name` (text, 9057) | `category` (9060), `severity` (9061), `logged_at` (9062), `notes` (9063), `custom` (9064) |
+| `appointments` | 920 | `occurred_on` (date, 9065) | `clinic_name` (9068), `appointment_type` (9069), `notes` (9070), `created_at` (9071), `updated_at` (9072) |
+
+To re-create or extend: `python3 /tmp/ov-tracker-session/provision_schema.py` (schema in script; idempotent on tables that exist).
+
 ## Decisions Locked
 
 These are settled and should not be re-debated unless circumstances change:
