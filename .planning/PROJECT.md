@@ -82,7 +82,7 @@ If that works, the app succeeds. Everything else is supporting infrastructure.
   - **Frontend/backend**: Next.js App Router on Vercel
   - **Database**: Baserow (Development workspace) via REST API
   - **Notifications**: Pushover (developer has Pushover keys ready to provide)
-  - **Auth**: simple shared-password gate (single-user app — no need for full identity)
+  - **Auth**: simple shared-password gate (single-user app — no need for full identity). **Password is stored in a Baserow table dedicated to this app** (e.g. an `app_config` table with a `password_hash` row), not in an environment variable. Low-security is acceptable — store as bcrypt hash, not plaintext, but no need for rate-limiting, lockouts, or fancy session schemes. Reading the password from Baserow at login time means rotating it = editing a Baserow row, no redeploy.
 - **Honest predictions over impressive predictions**: better to say "we need more data" than to fake precision
 - **Design via the `frontend-design:frontend-design` skill**: when we hit the UI/visual design phase, invoke that skill rather than freelancing styles. It produces a coherent visual system (typography, spacing, color, component patterns) that we apply across the today screen, calendar, charts, symptom log, appointments, and PDF — instead of one-off Tailwind choices per screen.
 
