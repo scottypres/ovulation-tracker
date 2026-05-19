@@ -98,11 +98,18 @@ export default async function MorePage() {
           <p className="text-sm text-muted-foreground">
             Export a PDF summary of your cycle history and notes for your clinician.
           </p>
-          <Button className="h-10 rounded-xl" render={<a href="/api/report" />}>
+          <Button
+            variant="outline"
+            className="h-10 rounded-xl"
+            render={
+              <a href="/api/report" target="_blank" rel="noopener noreferrer" />
+            }
+          >
             Export PDF
           </Button>
           <p className="text-[11px] text-muted-foreground">
-            Phase 4 — generation lands in a future deploy.
+            Opens in a new tab. Includes a per-cycle timeline plus symptom and
+            appointment appendices.
           </p>
         </div>
       </section>
