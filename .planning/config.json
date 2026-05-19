@@ -1,0 +1,6 @@
+{
+  "mode": "yolo",
+  "depth": "quick",
+  "parallelization": "parallel",
+  "research": "full"
+}
