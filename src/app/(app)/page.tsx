@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { getConfig } from "@/lib/baserow/client";
 import { listEvents } from "@/lib/actions/events";
 import { listSymptoms } from "@/lib/actions/symptoms";
+import { listAppointments } from "@/lib/actions/appointments";
 import { deriveCycles, type EventType } from "@/lib/cycles/derive";
 import { predict } from "@/lib/cycles/predict";
 import { CycleRing } from "@/components/cycle-ring";
 import { QuickActions } from "@/components/quick-actions";
+import { NewAppointmentButton } from "@/components/appointment-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +28,16 @@ function firstName(name: string | null): string {
 }
 
 export default async function TodayPage() {
-  const [userName, events, symptoms] = await Promise.all([
+  const [userName, events, symptoms, appointments] = await Promise.all([
     getConfig("user_name"),
     listEvents(),
     listSymptoms(),
+    listAppointments(),
   ]);
+
+  const lastAppointment = [...appointments]
+    .filter((a) => a.occurred_on)
+    .sort((a, b) => (b.occurred_on ?? "").localeCompare(a.occurred_on ?? ""))[0];
 
   const eventInputs = events
     .filter((e) => e.type?.value && e.occurred_on)
@@ -133,6 +141,39 @@ export default async function TodayPage() {
       <section className="flex flex-col gap-3">
         <h2 className="px-5 font-display text-base text-foreground">Quick log</h2>
         <QuickActions today={today} />
+      </section>
+
+      {/* Appointments */}
+      <section className="flex flex-col gap-3 px-5">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="font-display text-base text-foreground">Appointments</h2>
+          <Link
+            href="/appointments"
+            className="text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">
+            Capture notes during a CNY Fertility visit or other clinic check-in.
+          </p>
+          <NewAppointmentButton />
+          {lastAppointment ? (
+            <Link
+              href="/appointments"
+              className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <span className="text-foreground">Last visit:</span>{" "}
+              {lastAppointment.appointment_type?.value ?? "Appointment"}
+              {" · "}
+              {lastAppointment.occurred_on}
+              {lastAppointment.clinic_name
+                ? ` · ${lastAppointment.clinic_name}`
+                : ""}
+            </Link>
+          ) : null}
+        </div>
       </section>
 
       {/* Today list */}
