@@ -168,6 +168,12 @@
           "type": "last_modified",
           "primary": false,
           "api_name": "field_9072"
+        },
+        "attachments": {
+          "id": 9073,
+          "type": "long_text",
+          "primary": false,
+          "api_name": "field_9073"
         }
       }
     }

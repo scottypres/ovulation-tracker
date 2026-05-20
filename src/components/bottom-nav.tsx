@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Plus, BarChart3, Menu } from "lucide-react";
+import { Home, Calendar, Plus, Stethoscope, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -16,7 +16,7 @@ const ITEMS: NavItem[] = [
   { href: "/", label: "Today", Icon: Home, match: (p) => p === "/" },
   { href: "/calendar", label: "Calendar", Icon: Calendar },
   { href: "/log", label: "Log", Icon: Plus },
-  { href: "/charts", label: "Charts", Icon: BarChart3 },
+  { href: "/appointments", label: "Visits", Icon: Stethoscope },
   { href: "/more", label: "More", Icon: Menu },
 ];
 

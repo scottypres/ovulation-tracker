@@ -167,6 +167,7 @@ export const AppointmentRow = z.object({
   clinic_name: z.string().nullable(),
   appointment_type: selectOption,
   notes: z.string().nullable(),
+  attachments: z.string().nullable(),
   created_at: z.string().nullable(),
   updated_at: z.string().nullable(),
 });

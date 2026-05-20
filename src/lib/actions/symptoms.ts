@@ -38,6 +38,46 @@ export async function logSymptom(formData: FormData): Promise<void> {
   revalidatePath("/");
 }
 
+type BulkItem = {
+  name: string;
+  category: "physical" | "mood" | "other";
+  custom?: boolean;
+};
+
+export async function logSymptomsBulk(
+  items: BulkItem[],
+  shared: {
+    logged_at?: string | null;
+    severity?: "low" | "medium" | "high" | null;
+    notes?: string | null;
+  },
+): Promise<void> {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("Pick at least one symptom");
+  }
+  const loggedAt = shared.logged_at && shared.logged_at.length > 0
+    ? shared.logged_at
+    : new Date().toISOString();
+  const severity = shared.severity ?? null;
+  const notes = shared.notes && shared.notes.length > 0 ? shared.notes : null;
+
+  await createRows(
+    "symptoms",
+    items.map((it) => ({
+      name: it.name.trim(),
+      category: it.category,
+      severity,
+      logged_at: loggedAt,
+      notes,
+      custom: !!it.custom,
+    })),
+  );
+
+  revalidatePath("/symptoms");
+  revalidatePath("/");
+  revalidatePath("/log");
+}
+
 export async function deleteSymptom(id: number): Promise<void> {
   await deleteRows("symptoms", [id]);
   revalidatePath("/symptoms");

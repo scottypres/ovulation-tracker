@@ -8,10 +8,10 @@ import {
 import { PREDEFINED_SYMPTOMS } from "@/lib/actions/constants";
 import { Button } from "@/components/ui/button";
 import {
-  SymptomChips,
-  CustomSymptomInput,
+  SymptomMultiSelect,
   type ChipItem,
 } from "@/components/symptom-logger";
+import { getCustomSymptomChips } from "@/lib/actions/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -82,10 +82,11 @@ type RecentItem =
     };
 
 export default async function LogPage() {
-  const [events, symptoms, customNames] = await Promise.all([
+  const [events, symptoms, customNames, savedCustomChips] = await Promise.all([
     listEvents(),
     listSymptoms(),
     recentCustomSymptomNames(),
+    getCustomSymptomChips(),
   ]);
 
   // Recent symptom chips: pick most recent unique names from last 30 days, max 8
@@ -108,6 +109,15 @@ export default async function LogPage() {
   };
   for (const s of PREDEFINED_SYMPTOMS) {
     groupedChips[s.category].push({ name: s.name, category: s.category });
+  }
+  for (const c of savedCustomChips) {
+    if (!groupedChips[c.category].some((g) => g.name === c.name)) {
+      groupedChips[c.category].push({
+        name: c.name,
+        category: c.category,
+        custom: true,
+      });
+    }
   }
   for (const name of customNames) {
     if (!groupedChips.other.some((g) => g.name === name)) {
@@ -226,33 +236,16 @@ export default async function LogPage() {
         <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Log symptom
         </h2>
-
-        {recentChips.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Recent
-            </h3>
-            <SymptomChips items={recentChips} />
-          </div>
-        ) : null}
-
-        {(["physical", "mood", "other"] as const).map((cat) =>
-          groupedChips[cat].length === 0 ? null : (
-            <div key={cat} className="flex flex-col gap-2">
-              <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                {SYMPTOM_CATEGORY_LABELS[cat]}
-              </h3>
-              <SymptomChips items={groupedChips[cat]} variant="muted" />
-            </div>
-          ),
-        )}
-
-        <div className="flex flex-col gap-2">
-          <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Custom
-          </h3>
-          <CustomSymptomInput />
-        </div>
+        <p className="-mt-2 text-[11px] text-muted-foreground">
+          Tap as many as apply, then submit them together with one timestamp.
+        </p>
+        <SymptomMultiSelect
+          recent={recentChips}
+          groups={(["physical", "mood", "other"] as const).map((cat) => ({
+            label: SYMPTOM_CATEGORY_LABELS[cat],
+            items: groupedChips[cat],
+          }))}
+        />
       </section>
 
       {/* Recent activity (events + symptoms, last 30 days) */}

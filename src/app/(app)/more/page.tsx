@@ -1,15 +1,29 @@
+import Link from "next/link";
+import { BarChart3 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { saveSettings } from "@/lib/actions/settings";
+import {
+  saveSettings,
+  getCustomSymptomChips,
+  addCustomSymptomChip,
+  removeCustomSymptomChip,
+} from "@/lib/actions/settings";
 import { getConfig } from "@/lib/baserow/client";
 
 export const dynamic = "force-dynamic";
 
+const CATEGORY_LABELS: Record<string, string> = {
+  physical: "Physical",
+  mood: "Mood",
+  other: "Other",
+};
+
 export default async function MorePage() {
-  const [userName, timezone, hasPushover] = await Promise.all([
+  const [userName, timezone, hasPushover, customChips] = await Promise.all([
     getConfig("user_name"),
     getConfig("timezone"),
     getConfig("pushover_user_key").then((v) => Boolean(v && v.trim())),
+    getCustomSymptomChips(),
   ]);
 
   return (
@@ -89,6 +103,118 @@ export default async function MorePage() {
             Save settings
           </Button>
         </form>
+      </section>
+
+      {/* Custom symptom chips */}
+      <section className="px-5">
+        <h2 className="mb-2 font-display text-base text-foreground">
+          Custom symptom buttons
+        </h2>
+        <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">
+            Add buttons that always show up under Log → symptoms, so you don&apos;t
+            have to type them every time.
+          </p>
+
+          {customChips.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border bg-background px-3 py-3 text-center text-xs text-muted-foreground">
+              No custom buttons yet.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {customChips.map((c) => (
+                <li
+                  key={c.name}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-2"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {CATEGORY_LABELS[c.category]}
+                    </span>
+                    <span className="truncate text-sm text-foreground">
+                      {c.name}
+                    </span>
+                  </div>
+                  <form action={removeCustomSymptomChip}>
+                    <input type="hidden" name="name" value={c.name} />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+                    >
+                      Remove
+                    </Button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form
+            action={addCustomSymptomChip}
+            className="flex flex-col gap-3 border-t border-border pt-4"
+          >
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="custom-chip-name"
+                className="text-xs font-medium text-foreground"
+              >
+                Button label
+              </label>
+              <input
+                id="custom-chip-name"
+                name="name"
+                type="text"
+                required
+                maxLength={40}
+                placeholder="e.g. Implantation cramps"
+                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="custom-chip-category"
+                className="text-xs font-medium text-foreground"
+              >
+                Group
+              </label>
+              <select
+                id="custom-chip-category"
+                name="category"
+                defaultValue="other"
+                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              >
+                <option value="physical">Physical</option>
+                <option value="mood">Mood</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <Button type="submit" className="h-10 self-start rounded-xl px-4">
+              Add button
+            </Button>
+          </form>
+        </div>
+      </section>
+
+      {/* Insights */}
+      <section className="px-5">
+        <h2 className="mb-2 font-display text-base text-foreground">Insights</h2>
+        <Link
+          href="/charts"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-secondary/40 active:bg-secondary/60"
+        >
+          <div className="flex items-center gap-3">
+            <BarChart3 className="size-5 text-muted-foreground" />
+            <div>
+              <div className="text-sm font-medium text-foreground">Charts</div>
+              <div className="text-xs text-muted-foreground">
+                Cycle lengths and patterns over time.
+              </div>
+            </div>
+          </div>
+          <span className="text-xs text-muted-foreground">→</span>
+        </Link>
       </section>
 
       {/* Doctor report */}
