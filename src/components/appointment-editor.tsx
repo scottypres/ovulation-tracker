@@ -10,7 +10,6 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerClose,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import {
@@ -159,26 +158,36 @@ function AppointmentForm({
 export function NewAppointmentButton() {
   const [open, setOpen] = useState(false);
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80"
+      >
         + New appointment
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>New appointment</DrawerTitle>
-          <DrawerDescription>Add a clinic visit or check-in.</DrawerDescription>
-        </DrawerHeader>
-        <AppointmentForm mode="create" onDone={() => setOpen(false)} />
-      </DrawerContent>
-    </Drawer>
+      </button>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>New appointment</DrawerTitle>
+            <DrawerDescription>Add a clinic visit or check-in.</DrawerDescription>
+          </DrawerHeader>
+          <AppointmentForm mode="create" onDone={() => setOpen(false)} />
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }
 
 export function AppointmentRow({ ap }: { ap: AppointmentRecord }) {
   const [open, setOpen] = useState(false);
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger className="flex w-full items-start justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left shadow-sm hover:bg-secondary/40">
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="flex w-full items-start justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left shadow-sm transition-colors hover:bg-secondary/40 active:bg-secondary/60"
+      >
         <div className="min-w-0 flex-1">
           <div className="text-sm font-medium text-foreground">
             {ap.appointment_type?.value ?? "Appointment"}
@@ -193,17 +202,19 @@ export function AppointmentRow({ ap }: { ap: AppointmentRecord }) {
             </div>
           ) : null}
         </div>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{ap.appointment_type?.value ?? "Appointment"}</DrawerTitle>
-          <DrawerDescription>
-            {ap.occurred_on}
-            {ap.clinic_name ? ` · ${ap.clinic_name}` : ""}
-          </DrawerDescription>
-        </DrawerHeader>
-        <AppointmentForm mode="edit" initial={ap} onDone={() => setOpen(false)} />
-      </DrawerContent>
-    </Drawer>
+      </button>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{ap.appointment_type?.value ?? "Appointment"}</DrawerTitle>
+            <DrawerDescription>
+              {ap.occurred_on}
+              {ap.clinic_name ? ` · ${ap.clinic_name}` : ""}
+            </DrawerDescription>
+          </DrawerHeader>
+          <AppointmentForm mode="edit" initial={ap} onDone={() => setOpen(false)} />
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }
