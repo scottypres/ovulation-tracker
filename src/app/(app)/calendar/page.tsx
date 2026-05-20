@@ -36,6 +36,9 @@ type DayMeta = {
   inMonth: boolean;
   today: boolean;
   period: boolean;
+  periodEnd: boolean;
+  lhSurge: boolean;
+  tempRise: boolean;
   fertile: boolean;
   predOvu: boolean;
   confOvu: boolean;
@@ -87,9 +90,19 @@ export default async function CalendarPage({
 
   // Build sets/maps keyed by ISO date
   const periodDays = new Set<string>();
+  const periodEndDays = new Set<string>();
+  const lhSurgeDays = new Set<string>();
+  const tempRiseDays = new Set<string>();
   const fertileDays = new Set<string>();
   const predOvuDays = new Set<string>();
   const confOvuDays = new Set<string>();
+
+  // Raw event days: render dots on the exact day the user logged in Quick Log
+  for (const e of eventInputs) {
+    if (e.type === "period_end") periodEndDays.add(e.occurred_on);
+    if (e.type === "lh_surge") lhSurgeDays.add(e.occurred_on);
+    if (e.type === "temp_rise") tempRiseDays.add(e.occurred_on);
+  }
 
   // Period spans: for each period_start, include start..end (if end logged)
   // or start..start+6 if no end (and no following start before that).
@@ -192,6 +205,9 @@ export default async function CalendarPage({
       inMonth: isSameMonth(d, monthAnchor),
       today: isSameDay(d, today),
       period: periodDays.has(iso),
+      periodEnd: periodEndDays.has(iso),
+      lhSurge: lhSurgeDays.has(iso),
+      tempRise: tempRiseDays.has(iso),
       fertile: fertileDays.has(iso),
       predOvu: predOvuDays.has(iso),
       confOvu: confOvuDays.has(iso),
@@ -264,7 +280,7 @@ export default async function CalendarPage({
                     muted ? "opacity-40" : "hover:bg-secondary/60",
                   ].join(" ")}
                   style={bgStyle}
-                  aria-label={`${format(d.date, "MMMM d, yyyy")}${d.period ? ", period day" : ""}${d.fertile ? ", fertile window" : ""}${d.predOvu ? ", predicted ovulation" : ""}${d.confOvu ? ", confirmed ovulation" : ""}${d.symptoms ? `, ${d.symptoms} symptom${d.symptoms === 1 ? "" : "s"} logged` : ""}`}
+                  aria-label={`${format(d.date, "MMMM d, yyyy")}${d.period ? ", period day" : ""}${d.periodEnd ? ", period ended" : ""}${d.lhSurge ? ", LH surge logged" : ""}${d.tempRise ? ", temperature rise logged" : ""}${d.fertile ? ", fertile window" : ""}${d.predOvu ? ", predicted ovulation" : ""}${d.confOvu ? ", confirmed ovulation" : ""}${d.appointment ? ", appointment" : ""}${d.symptoms ? `, ${d.symptoms} symptom${d.symptoms === 1 ? "" : "s"} logged` : ""}`}
                 >
                   <span
                     className={[
@@ -275,29 +291,49 @@ export default async function CalendarPage({
                     {format(d.date, "d")}
                   </span>
 
-                  {/* Marker stack */}
+                  {/* Derived ovulation glyph */}
                   <div className="flex items-center gap-0.5">
                     {d.confOvu ? (
                       <Star aria-hidden />
                     ) : d.predOvu ? (
                       <Bullseye aria-hidden />
                     ) : null}
-                    {d.appointment ? (
-                      <span
-                        aria-hidden
-                        className="size-1.5 rounded-full"
-                        style={{ backgroundColor: "var(--ovu-pred)" }}
-                      />
-                    ) : null}
                   </div>
 
-                  {/* Bottom row: period bar + symptom dot */}
-                  <div className="absolute inset-x-1 bottom-1 flex items-center justify-center gap-1">
+                  {/* Bottom row: raw events + derived markers */}
+                  <div className="absolute inset-x-1 bottom-1 flex items-center justify-center gap-0.5">
                     {d.period ? (
                       <span
                         aria-hidden
                         className="h-1 w-3 rounded-full"
                         style={{ backgroundColor: "var(--period)" }}
+                      />
+                    ) : null}
+                    {d.periodEnd && !d.period ? (
+                      <span
+                        aria-hidden
+                        className="size-1 rounded-full"
+                        style={{ backgroundColor: "var(--period-soft)" }}
+                      />
+                    ) : null}
+                    {d.lhSurge ? (
+                      <span
+                        aria-hidden
+                        className="size-1 rounded-full"
+                        style={{ backgroundColor: "var(--ovu-pred)" }}
+                      />
+                    ) : null}
+                    {d.tempRise ? (
+                      <span
+                        aria-hidden
+                        className="size-1 rounded-full"
+                        style={{ backgroundColor: "var(--ovu-conf)" }}
+                      />
+                    ) : null}
+                    {d.appointment ? (
+                      <span
+                        aria-hidden
+                        className="size-1 rounded-full bg-foreground"
                       />
                     ) : null}
                     {d.symptoms > 0 ? (
@@ -318,7 +354,11 @@ export default async function CalendarPage({
       <section className="px-5">
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <h3 className="mb-3 font-display text-sm text-foreground">Legend</h3>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground sm:grid-cols-3">
+
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            Logged events
+          </p>
+          <ul className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground sm:grid-cols-3">
             <li className="flex items-center gap-2">
               <span
                 aria-hidden
@@ -327,6 +367,50 @@ export default async function CalendarPage({
               />
               <span>Period day</span>
             </li>
+            <li className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full"
+                style={{ backgroundColor: "var(--period-soft)" }}
+              />
+              <span>Period ended</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full"
+                style={{ backgroundColor: "var(--ovu-pred)" }}
+              />
+              <span>LH+ surge</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full"
+                style={{ backgroundColor: "var(--ovu-conf)" }}
+              />
+              <span>Temp rise</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full bg-muted-foreground"
+              />
+              <span>Symptom logged</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full bg-foreground"
+              />
+              <span>Appointment</span>
+            </li>
+          </ul>
+
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            Predictions
+          </p>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground sm:grid-cols-3">
             <li className="flex items-center gap-2">
               <span
                 aria-hidden
@@ -342,21 +426,6 @@ export default async function CalendarPage({
             <li className="flex items-center gap-2">
               <Star aria-hidden />
               <span>Confirmed ovulation</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full bg-muted-foreground"
-              />
-              <span>Symptom logged</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: "var(--ovu-pred)" }}
-              />
-              <span>Appointment</span>
             </li>
           </ul>
         </div>
