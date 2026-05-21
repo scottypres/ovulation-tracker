@@ -14,6 +14,7 @@ import {
   parseAttachments,
   formatBytes,
 } from "@/lib/appointments/attachments";
+import { formatDateMDY } from "@/lib/format/dates";
 import { Button } from "@/components/ui/button";
 import { EditAppointmentMetadataButton } from "@/components/appointment-editor";
 import { DeleteAppointmentButton } from "@/components/delete-appointment-button";
@@ -192,8 +193,7 @@ export default async function AppointmentDetailPage({
                     {a.name}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    {formatBytes(a.size)} ·{" "}
-                    {new Date(a.ts).toLocaleDateString()}
+                    {formatBytes(a.size)} · {formatDateMDY(a.ts)}
                   </div>
                 </a>
                 <form action={deleteAppointmentAttachment}>

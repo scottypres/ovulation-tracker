@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { formatDateMDY } from "@/lib/format/dates";
 import { listAppointments } from "@/lib/actions/appointments";
 import { NewAppointmentButton } from "@/components/appointment-editor";
 import { parseNotes } from "@/lib/appointments/notes";
@@ -7,19 +8,6 @@ import { parseAttachments } from "@/lib/appointments/attachments";
 import { Paperclip, StickyNote } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "—";
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || !m || !d) return iso;
-  const date = new Date(y, m - 1, d);
-  return date.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 export default async function AppointmentsPage() {
   const rows = await listAppointments();
@@ -52,7 +40,7 @@ export default async function AppointmentsPage() {
                     {ap.appointment_type?.value ?? "Appointment"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {formatDate(ap.occurred_on)}
+                    {formatDateMDY(ap.occurred_on)}
                     {ap.clinic_name ? ` · ${ap.clinic_name}` : ""}
                   </div>
                   {noteCount + fileCount > 0 ? (

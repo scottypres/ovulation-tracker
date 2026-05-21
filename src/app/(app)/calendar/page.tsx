@@ -271,7 +271,7 @@ export default async function CalendarPage({
               return (
                 <Link
                   key={d.iso}
-                  href={`/log?d=${d.iso}`}
+                  href={`/calendar/${d.iso}`}
                   className={[
                     "relative flex h-12 flex-col items-center justify-start gap-0.5 rounded-lg border px-1 pt-1 pb-0.5 text-center transition sm:h-14",
                     d.today

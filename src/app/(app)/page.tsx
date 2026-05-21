@@ -1,4 +1,5 @@
 import { getConfig } from "@/lib/baserow/client";
+import { formatDateMDY } from "@/lib/format/dates";
 import { listEvents } from "@/lib/actions/events";
 import { listSymptoms } from "@/lib/actions/symptoms";
 import { deriveCycles, type EventType } from "@/lib/cycles/derive";
@@ -152,7 +153,7 @@ export default async function TodayPage() {
                 <span className="text-foreground">
                   {EVENT_LABELS[e.type] ?? e.type}
                 </span>
-                <span className="text-xs text-muted-foreground">{e.occurred_on}</span>
+                <span className="text-xs text-muted-foreground">{formatDateMDY(e.occurred_on)}</span>
               </li>
             ))}
             {todaysSymptoms.map((s) => (

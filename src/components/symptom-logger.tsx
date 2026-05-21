@@ -12,7 +12,7 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { logSymptom, logSymptomsBulk } from "@/lib/actions/symptoms";
+import { logSymptomsBulk } from "@/lib/actions/symptoms";
 import { cn } from "@/lib/utils";
 
 type Category = "physical" | "mood" | "other";
@@ -30,6 +30,15 @@ function nowLocalISO(): string {
   return local.toISOString().slice(0, 16);
 }
 
+function dateAtNowTimeLocal(dateIso: string): string {
+  // dateIso is YYYY-MM-DD. Combine with the current local clock time.
+  const now = new Date();
+  const off = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - off * 60_000);
+  const hhmm = local.toISOString().slice(11, 16);
+  return `${dateIso}T${hhmm}`;
+}
+
 function localToIso(local: string): string {
   if (!local) return new Date().toISOString();
   const d = new Date(local);
@@ -40,9 +49,11 @@ function localToIso(local: string): string {
 export function SymptomMultiSelect({
   recent,
   groups,
+  dateOverride,
 }: {
   recent: ChipItem[];
   groups: { label: string; items: ChipItem[] }[];
+  dateOverride?: string;
 }) {
   const [selected, setSelected] = useState<Map<string, ChipItem>>(new Map());
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -127,7 +138,24 @@ export function SymptomMultiSelect({
         ),
       )}
 
-      <CustomSymptomInput />
+      <CustomChipForm
+        onAdd={(name) => {
+          const trimmed = name.trim();
+          if (!trimmed) return;
+          setSelected((prev) => {
+            const it: ChipItem = {
+              name: trimmed,
+              category: "other",
+              custom: true,
+            };
+            const k = chipKey(it);
+            if (prev.has(k)) return prev;
+            const next = new Map(prev);
+            next.set(k, it);
+            return next;
+          });
+        }}
+      />
 
       {count > 0 ? (
         <div className="sticky bottom-24 z-30 mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur">
@@ -195,7 +223,9 @@ export function SymptomMultiSelect({
                 id="bulk-logged-at"
                 type="datetime-local"
                 name="logged_at"
-                defaultValue={nowLocalISO()}
+                defaultValue={
+                  dateOverride ? dateAtNowTimeLocal(dateOverride) : nowLocalISO()
+                }
                 className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
               />
               <p className="text-[11px] text-muted-foreground">
@@ -291,30 +321,14 @@ function ChipRow({
   );
 }
 
-export function CustomSymptomInput() {
-  const [open, setOpen] = useState(false);
-  const [pending, startTransition] = useTransition();
-  const [nameDraft, setNameDraft] = useState("");
+function CustomChipForm({ onAdd }: { onAdd: (name: string) => void }) {
+  const [name, setName] = useState("");
 
-  function submit(formData: FormData) {
-    const name = String(formData.get("name") ?? "").trim();
-    if (!name) {
-      toast.error("Name required");
-      return;
-    }
-    formData.set("category", "other");
-    formData.set("custom", "1");
-    startTransition(async () => {
-      try {
-        await logSymptom(formData);
-        toast.success(`${name} logged`, { duration: 2000 });
-        setOpen(false);
-        setNameDraft("");
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Could not log symptom";
-        toast.error(msg);
-      }
-    });
+  function commit() {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    onAdd(trimmed);
+    setName("");
   }
 
   return (
@@ -322,110 +336,33 @@ export function CustomSymptomInput() {
       <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
         Custom
       </h3>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center justify-start rounded-xl border border-dashed border-border bg-card px-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:bg-secondary/80"
-      >
-        + Log a one-off free-form symptom
-      </button>
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Log a symptom</DrawerTitle>
-            <DrawerDescription>
-              Pick a name, when it happened, severity, and any notes.
-            </DrawerDescription>
-          </DrawerHeader>
-          <form action={submit} className="flex flex-col gap-4 px-4 pb-2">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="sym-name"
-                className="text-xs font-medium text-foreground"
-              >
-                Symptom
-              </label>
-              <input
-                id="sym-name"
-                name="name"
-                type="text"
-                required
-                value={nameDraft}
-                onChange={(e) => setNameDraft(e.target.value)}
-                placeholder="e.g. dull cramps, twinges"
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="sym-logged-at"
-                className="text-xs font-medium text-foreground"
-              >
-                When
-              </label>
-              <input
-                id="sym-logged-at"
-                type="datetime-local"
-                name="logged_at"
-                defaultValue={nowLocalISO()}
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              />
-              <p className="text-[11px] text-muted-foreground">
-                Defaults to right now. Change if it happened earlier.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="sym-severity"
-                className="text-xs font-medium text-foreground"
-              >
-                Severity
-              </label>
-              <select
-                id="sym-severity"
-                name="severity"
-                defaultValue=""
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              >
-                <option value="">—</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="sym-notes"
-                className="text-xs font-medium text-foreground"
-              >
-                Notes (optional)
-              </label>
-              <textarea
-                id="sym-notes"
-                name="notes"
-                rows={3}
-                className="rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              />
-            </div>
-
-            <DrawerFooter className="px-0">
-              <Button
-                type="submit"
-                disabled={pending}
-                className="h-10 rounded-xl"
-              >
-                Log symptom
-              </Button>
-              <DrawerClose className="inline-flex h-10 items-center justify-center rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground">
-                Cancel
-              </DrawerClose>
-            </DrawerFooter>
-          </form>
-        </DrawerContent>
-      </Drawer>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              commit();
+            }
+          }}
+          placeholder="Add a custom symptom"
+          maxLength={40}
+          className="h-10 flex-1 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+        />
+        <Button
+          type="button"
+          onClick={commit}
+          disabled={!name.trim()}
+          className="h-10 shrink-0 rounded-xl px-4"
+        >
+          Add
+        </Button>
+      </div>
+      <p className="text-[11px] text-muted-foreground">
+        Adds to your selection. Tap “Log” to record everything at one time.
+      </p>
     </div>
   );
 }

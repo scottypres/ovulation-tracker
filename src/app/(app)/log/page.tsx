@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/page-header";
+import { formatDateMDY, formatTimestampMDY } from "@/lib/format/dates";
 import { listEvents, logEvent, deleteEvent } from "@/lib/actions/events";
 import {
   listSymptoms,
@@ -279,8 +280,8 @@ export default async function LogPage() {
                     <div className="text-sm text-foreground">{it.label}</div>
                     <div className="text-xs text-muted-foreground">
                       {it.kind === "symptom"
-                        ? new Date(it.ts).toLocaleString()
-                        : it.ts}
+                        ? formatTimestampMDY(it.ts)
+                        : formatDateMDY(it.ts)}
                       {it.detail ? ` · ${it.detail}` : ""}
                     </div>
                   </div>
@@ -337,7 +338,7 @@ export default async function LogPage() {
                             "Event"}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {e.occurred_on}
+                          {formatDateMDY(e.occurred_on)}
                           {e.notes ? ` · ${e.notes}` : ""}
                         </div>
                       </div>

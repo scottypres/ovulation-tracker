@@ -77,19 +77,9 @@ export function removeNote(
   return serialize(existing);
 }
 
+import { formatTimestampMDY } from "@/lib/format/dates";
+
 export function formatNoteTimestamp(iso: string | null): string {
   if (!iso) return "Earlier";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const date = d.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  const time = d.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-  return `${date} · ${time}`;
+  return formatTimestampMDY(iso);
 }
