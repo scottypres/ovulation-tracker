@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { listEvents, logEvent, deleteEvent } from "@/lib/actions/events";
+import { listEvents, deleteEvent } from "@/lib/actions/events";
+import { DayEventForm } from "@/components/day-event-form";
 import {
   listSymptoms,
   deleteSymptom,
@@ -182,49 +183,7 @@ export default async function CalendarDayPage({
           </ul>
         )}
 
-        <form
-          action={logEvent}
-          className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
-        >
-          <input type="hidden" name="occurred_on" value={date} />
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="day-event-type"
-              className="text-xs font-medium text-foreground"
-            >
-              Add event
-            </label>
-            <select
-              id="day-event-type"
-              name="type"
-              defaultValue="period_start"
-              required
-              className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-            >
-              <option value="period_start">Period started</option>
-              <option value="period_end">Period ended</option>
-              <option value="lh_surge">LH surge</option>
-              <option value="temp_rise">Temp rise</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="day-event-notes"
-              className="text-xs font-medium text-foreground"
-            >
-              Notes (optional)
-            </label>
-            <textarea
-              id="day-event-notes"
-              name="notes"
-              rows={2}
-              className="rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-            />
-          </div>
-          <Button type="submit" className="h-10 self-start rounded-xl px-4">
-            Add event
-          </Button>
-        </form>
+        <DayEventForm date={date} />
       </section>
 
       {/* Logged symptoms */}
