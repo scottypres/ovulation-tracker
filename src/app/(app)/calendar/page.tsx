@@ -301,47 +301,24 @@ export default async function CalendarPage({
                     ) : null}
                   </div>
 
-                  {/* Bottom row: raw events + derived markers */}
-                  <div className="absolute inset-x-1 bottom-1 flex items-center justify-center gap-0.5">
-                    {d.period ? (
-                      <span
-                        aria-hidden
-                        className="h-1 w-3 rounded-full"
-                        style={{ backgroundColor: "var(--period)" }}
-                      />
-                    ) : null}
+                  {/* Bottom row: raw events + derived markers (emoji) */}
+                  <div className="absolute inset-x-0.5 bottom-0.5 flex items-center justify-center gap-px text-[10px] leading-none">
+                    {d.period ? <span aria-hidden>🩸</span> : null}
                     {d.periodEnd && !d.period ? (
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full"
-                        style={{ backgroundColor: "var(--period-soft)" }}
-                      />
+                      <span aria-hidden>🌙</span>
                     ) : null}
-                    {d.lhSurge ? (
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full"
-                        style={{ backgroundColor: "var(--ovu-pred)" }}
-                      />
-                    ) : null}
-                    {d.tempRise ? (
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full"
-                        style={{ backgroundColor: "var(--ovu-conf)" }}
-                      />
-                    ) : null}
-                    {d.appointment ? (
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full bg-foreground"
-                      />
-                    ) : null}
+                    {d.lhSurge ? <span aria-hidden>⚡</span> : null}
+                    {d.tempRise ? <span aria-hidden>🌡️</span> : null}
+                    {d.appointment ? <span aria-hidden>🩺</span> : null}
                     {d.symptoms > 0 ? (
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full bg-muted-foreground"
-                      />
+                      <span aria-hidden className="inline-flex items-baseline gap-px">
+                        💭
+                        {d.symptoms > 1 ? (
+                          <span className="text-[8px] font-medium text-muted-foreground">
+                            {d.symptoms}
+                          </span>
+                        ) : null}
+                      </span>
                     ) : null}
                   </div>
                 </Link>
@@ -361,49 +338,27 @@ export default async function CalendarPage({
           </p>
           <ul className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground sm:grid-cols-3">
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="h-1 w-3 rounded-full"
-                style={{ backgroundColor: "var(--period)" }}
-              />
+              <span aria-hidden className="text-sm leading-none">🩸</span>
               <span>Period day</span>
             </li>
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: "var(--period-soft)" }}
-              />
+              <span aria-hidden className="text-sm leading-none">🌙</span>
               <span>Period ended</span>
             </li>
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: "var(--ovu-pred)" }}
-              />
+              <span aria-hidden className="text-sm leading-none">⚡</span>
               <span>LH+ surge</span>
             </li>
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: "var(--ovu-conf)" }}
-              />
+              <span aria-hidden className="text-sm leading-none">🌡️</span>
               <span>Temp rise</span>
             </li>
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full bg-muted-foreground"
-              />
+              <span aria-hidden className="text-sm leading-none">💭</span>
               <span>Symptom logged</span>
             </li>
             <li className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full bg-foreground"
-              />
+              <span aria-hidden className="text-sm leading-none">🩺</span>
               <span>Appointment</span>
             </li>
           </ul>
