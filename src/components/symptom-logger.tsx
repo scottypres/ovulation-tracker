@@ -30,13 +30,15 @@ function nowLocalISO(): string {
   return local.toISOString().slice(0, 16);
 }
 
-function dateAtNowTimeLocal(dateIso: string): string {
-  // dateIso is YYYY-MM-DD. Combine with the current local clock time.
+function nowLocalTime(): string {
   const now = new Date();
   const off = now.getTimezoneOffset();
   const local = new Date(now.getTime() - off * 60_000);
-  const hhmm = local.toISOString().slice(11, 16);
-  return `${dateIso}T${hhmm}`;
+  return local.toISOString().slice(11, 16);
+}
+
+function dateAtNowTimeLocal(dateIso: string): string {
+  return `${dateIso}T${nowLocalTime()}`;
 }
 
 function localToIso(local: string): string {
@@ -81,7 +83,10 @@ export function SymptomMultiSelect({
   }
 
   function submit(formData: FormData) {
-    const logged_at = localToIso(String(formData.get("logged_at") ?? ""));
+    const rawLocal = dateOverride
+      ? `${dateOverride}T${String(formData.get("logged_time") ?? nowLocalTime())}`
+      : String(formData.get("logged_at") ?? "");
+    const logged_at = localToIso(rawLocal);
     const severity =
       (String(formData.get("severity") ?? "") || null) as
         | "low"
@@ -212,26 +217,52 @@ export function SymptomMultiSelect({
             </div>
           </div>
           <form action={submit} className="flex flex-col gap-4 px-4 pb-2">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="bulk-logged-at"
-                className="text-xs font-medium text-foreground"
-              >
-                When
-              </label>
+            {dateOverride ? (
               <input
-                id="bulk-logged-at"
-                type="datetime-local"
+                type="hidden"
                 name="logged_at"
-                defaultValue={
-                  dateOverride ? dateAtNowTimeLocal(dateOverride) : nowLocalISO()
-                }
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                value={dateAtNowTimeLocal(dateOverride)}
               />
-              <p className="text-[11px] text-muted-foreground">
-                Defaults to right now. Change if it happened earlier.
-              </p>
-            </div>
+            ) : null}
+            {dateOverride ? (
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="bulk-logged-time"
+                  className="text-xs font-medium text-foreground"
+                >
+                  Time
+                </label>
+                <input
+                  id="bulk-logged-time"
+                  type="time"
+                  name="logged_time"
+                  defaultValue={nowLocalTime()}
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Logging on this day. Pick the time it happened.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="bulk-logged-at"
+                  className="text-xs font-medium text-foreground"
+                >
+                  When
+                </label>
+                <input
+                  id="bulk-logged-at"
+                  type="datetime-local"
+                  name="logged_at"
+                  defaultValue={nowLocalISO()}
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Defaults to right now. Change if it happened earlier.
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <label
