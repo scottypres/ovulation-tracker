@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/page-header";
-import { formatDateMDY, formatTimestampMDY } from "@/lib/format/dates";
+import { formatDateMDY, formatTimestampMDY, toAppDate } from "@/lib/format/dates";
 import { listEvents, logEvent, deleteEvent } from "@/lib/actions/events";
 import {
   listSymptoms,
@@ -167,7 +167,7 @@ export default async function LogPage() {
     olderGroups.set(k, arr);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toAppDate(new Date().toISOString()) ?? new Date().toISOString().slice(0, 10);
 
   return (
     <main className="flex flex-col gap-6 pb-4">

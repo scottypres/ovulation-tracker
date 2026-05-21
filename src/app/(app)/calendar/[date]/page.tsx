@@ -15,7 +15,7 @@ import {
   SymptomMultiSelect,
   type ChipItem,
 } from "@/components/symptom-logger";
-import { formatDateMDY, formatTimestampMDY } from "@/lib/format/dates";
+import { formatDateMDY, formatTimestampMDY, toAppDate } from "@/lib/format/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -81,7 +81,7 @@ export default async function CalendarDayPage({
     ]);
 
   const dayEvents = events.filter((e) => e.occurred_on === date);
-  const daySymptoms = symptoms.filter((s) => s.logged_at?.slice(0, 10) === date);
+  const daySymptoms = symptoms.filter((s) => toAppDate(s.logged_at) === date);
   const dayAppointments = appointments.filter((a) => a.occurred_on === date);
 
   // Build chip set for the multi-select (no "Recent" — that's for the global /log)

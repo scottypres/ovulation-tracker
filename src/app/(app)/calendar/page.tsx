@@ -16,6 +16,7 @@ import { PageHeader } from "@/components/page-header";
 import { listAppointments } from "@/lib/actions/appointments";
 import { listEvents } from "@/lib/actions/events";
 import { listSymptoms } from "@/lib/actions/symptoms";
+import { toAppDate } from "@/lib/format/dates";
 import {
   deriveCycles,
   meanCycleLength,
@@ -175,11 +176,11 @@ export default async function CalendarPage({
     }
   }
 
-  // Symptom counts per day
+  // Symptom counts per day (bucket by EST calendar date, not UTC)
   const symptomCounts = new Map<string, number>();
   for (const s of symptoms) {
-    if (!s.logged_at) continue;
-    const d = s.logged_at.slice(0, 10);
+    const d = toAppDate(s.logged_at);
+    if (!d) continue;
     symptomCounts.set(d, (symptomCounts.get(d) ?? 0) + 1);
   }
 

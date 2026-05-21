@@ -1,5 +1,5 @@
 import { getConfig } from "@/lib/baserow/client";
-import { formatDateMDY } from "@/lib/format/dates";
+import { formatDateMDY, toAppDate } from "@/lib/format/dates";
 import { listEvents } from "@/lib/actions/events";
 import { listSymptoms } from "@/lib/actions/symptoms";
 import { deriveCycles, type EventType } from "@/lib/cycles/derive";
@@ -17,7 +17,7 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  return toAppDate(new Date().toISOString()) ?? new Date().toISOString().slice(0, 10);
 }
 
 function firstName(name: string | null): string {
@@ -61,7 +61,7 @@ export default async function TodayPage() {
   const todaysEvents = eventInputs.filter((e) => e.occurred_on === today);
   const todaysSymptoms = symptoms.filter((s) => {
     if (!s.logged_at) return false;
-    return s.logged_at.slice(0, 10) === today;
+    return toAppDate(s.logged_at) === today;
   });
 
   const cycleLength = (() => {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import {
   getAppointment,
@@ -39,7 +39,6 @@ async function deleteThisAppointment(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!id) return;
   await deleteAppointment(id);
-  const { redirect } = await import("next/navigation");
   redirect("/appointments");
 }
 
