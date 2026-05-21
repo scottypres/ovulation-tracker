@@ -20,7 +20,9 @@ import {
 type AppointmentRowShape = {
   id: number;
   occurred_on: string | null;
+  appointment_time: string | null;
   clinic_name: string | null;
+  location: string | null;
   appointment_type: { id: number; value: string; color: string } | null;
   notes: string | null;
   attachments: string | null;
@@ -37,10 +39,21 @@ function sanitizeFileName(name: string): string {
     .slice(0, 120);
 }
 
+function normalizeTime(input: string): string | null {
+  const v = input.trim();
+  if (!v) return null;
+  if (!/^\d{1,2}:\d{2}$/.test(v)) return null;
+  const [h, m] = v.split(":").map(Number);
+  if (h > 23 || m > 59) return null;
+  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+}
+
 export async function createAppointment(formData: FormData): Promise<number> {
   const occurred_on = String(formData.get("occurred_on") ?? "");
+  const appointment_time = normalizeTime(String(formData.get("appointment_time") ?? ""));
   const clinic_name =
     String(formData.get("clinic_name") ?? "CNY Fertility") || "CNY Fertility";
+  const location = String(formData.get("location") ?? "").trim() || null;
   const appointment_type = String(
     formData.get("appointment_type") ?? "Initial consultation",
   );
@@ -53,7 +66,14 @@ export async function createAppointment(formData: FormData): Promise<number> {
   const notes = initialNote.length > 0 ? prependNote(null, initialNote) : null;
 
   const [created] = await createRows("appointments", [
-    { occurred_on, clinic_name, appointment_type, notes },
+    {
+      occurred_on,
+      appointment_time,
+      clinic_name,
+      location,
+      appointment_type,
+      notes,
+    },
   ]);
 
   revalidatePath("/appointments");
@@ -66,11 +86,16 @@ export async function updateAppointment(formData: FormData): Promise<void> {
   const occurred_on = String(formData.get("occurred_on") ?? "");
   const clinic_name = String(formData.get("clinic_name") ?? "");
   const appointment_type = String(formData.get("appointment_type") ?? "");
+  const location = String(formData.get("location") ?? "").trim();
+  const rawTime = String(formData.get("appointment_time") ?? "");
+  const appointment_time = rawTime.trim() === "" ? null : normalizeTime(rawTime);
 
   const patch: Record<string, unknown> = { id };
   if (/^\d{4}-\d{2}-\d{2}$/.test(occurred_on)) patch.occurred_on = occurred_on;
   if (clinic_name) patch.clinic_name = clinic_name;
   if (appointment_type) patch.appointment_type = appointment_type;
+  patch.appointment_time = appointment_time;
+  patch.location = location || null;
 
   await updateRows("appointments", [patch as { id: number }]);
   revalidatePath("/appointments");

@@ -22,7 +22,9 @@ import { APPOINTMENT_TYPES } from "@/lib/actions/constants";
 export type AppointmentRecord = {
   id: number;
   occurred_on: string | null;
+  appointment_time: string | null;
   clinic_name: string | null;
+  location: string | null;
   appointment_type: { id: number; value: string; color: string } | null;
   notes: string | null;
   attachments: string | null;
@@ -74,21 +76,37 @@ export function NewAppointmentButton({
             </DrawerDescription>
           </DrawerHeader>
           <form action={submit} className="flex flex-col gap-4 px-4 pb-2">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="ap-date"
-                className="text-xs font-medium text-foreground"
-              >
-                Date
-              </label>
-              <input
-                id="ap-date"
-                type="date"
-                name="occurred_on"
-                required
-                defaultValue={todayISO()}
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="ap-date"
+                  className="text-xs font-medium text-foreground"
+                >
+                  Date
+                </label>
+                <input
+                  id="ap-date"
+                  type="date"
+                  name="occurred_on"
+                  required
+                  defaultValue={todayISO()}
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="ap-time"
+                  className="text-xs font-medium text-foreground"
+                >
+                  Time (optional)
+                </label>
+                <input
+                  id="ap-time"
+                  type="time"
+                  name="appointment_time"
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label
@@ -103,6 +121,21 @@ export function NewAppointmentButton({
                 name="clinic_name"
                 defaultValue="CNY Fertility"
                 className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="ap-location"
+                className="text-xs font-medium text-foreground"
+              >
+                Location / address (optional)
+              </label>
+              <textarea
+                id="ap-location"
+                name="location"
+                rows={2}
+                placeholder="e.g. 195 Township Line Rd, Trenton NJ"
+                className="rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -197,21 +230,38 @@ export function EditAppointmentMetadataButton({
             <DrawerDescription>Change date, clinic, or type.</DrawerDescription>
           </DrawerHeader>
           <form action={submit} className="flex flex-col gap-4 px-4 pb-2">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="ap-edit-date"
-                className="text-xs font-medium text-foreground"
-              >
-                Date
-              </label>
-              <input
-                id="ap-edit-date"
-                type="date"
-                name="occurred_on"
-                required
-                defaultValue={ap.occurred_on ?? todayISO()}
-                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="ap-edit-date"
+                  className="text-xs font-medium text-foreground"
+                >
+                  Date
+                </label>
+                <input
+                  id="ap-edit-date"
+                  type="date"
+                  name="occurred_on"
+                  required
+                  defaultValue={ap.occurred_on ?? todayISO()}
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="ap-edit-time"
+                  className="text-xs font-medium text-foreground"
+                >
+                  Time (optional)
+                </label>
+                <input
+                  id="ap-edit-time"
+                  type="time"
+                  name="appointment_time"
+                  defaultValue={ap.appointment_time ?? ""}
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label
@@ -226,6 +276,22 @@ export function EditAppointmentMetadataButton({
                 name="clinic_name"
                 defaultValue={ap.clinic_name ?? "CNY Fertility"}
                 className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="ap-edit-location"
+                className="text-xs font-medium text-foreground"
+              >
+                Location / address (optional)
+              </label>
+              <textarea
+                id="ap-edit-location"
+                name="location"
+                rows={2}
+                defaultValue={ap.location ?? ""}
+                placeholder="e.g. 195 Township Line Rd, Trenton NJ"
+                className="rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
               />
             </div>
             <div className="flex flex-col gap-1.5">

@@ -34,6 +34,15 @@ function formatAppointmentDate(iso: string | null): string {
   });
 }
 
+function formatClockTime(hhmm: string): string {
+  const m = hhmm.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return hhmm;
+  let h = Number(m[1]);
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m[2]} ${ampm}`;
+}
+
 async function deleteThisAppointment(formData: FormData) {
   "use server";
   const id = Number(formData.get("id"));
@@ -77,9 +86,19 @@ export default async function AppointmentDetailPage({
           </p>
           <h1 className="font-display text-xl text-foreground">
             {formatAppointmentDate(ap.occurred_on)}
+            {ap.appointment_time ? (
+              <span className="ml-2 text-base text-muted-foreground">
+                · {formatClockTime(ap.appointment_time)}
+              </span>
+            ) : null}
           </h1>
           {ap.clinic_name ? (
             <p className="text-sm text-muted-foreground">{ap.clinic_name}</p>
+          ) : null}
+          {ap.location ? (
+            <p className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
+              📍 {ap.location}
+            </p>
           ) : null}
         </div>
       </section>

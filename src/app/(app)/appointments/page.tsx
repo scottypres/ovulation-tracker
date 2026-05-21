@@ -9,6 +9,15 @@ import { Paperclip, StickyNote } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+function formatClock(hhmm: string): string {
+  const m = hhmm.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return hhmm;
+  let h = Number(m[1]);
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m[2]} ${ampm}`;
+}
+
 export default async function AppointmentsPage() {
   const rows = await listAppointments();
 
@@ -41,6 +50,9 @@ export default async function AppointmentsPage() {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {formatDateMDY(ap.occurred_on)}
+                    {ap.appointment_time
+                      ? ` · ${formatClock(ap.appointment_time)}`
+                      : ""}
                     {ap.clinic_name ? ` · ${ap.clinic_name}` : ""}
                   </div>
                   {noteCount + fileCount > 0 ? (
