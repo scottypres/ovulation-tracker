@@ -32,7 +32,7 @@ export function CycleRing({
   // Build phase segments [startDay, endDay, color]. Days inclusive of start, exclusive of end.
   const segments: Array<{ start: number; end: number; color: string }> = [
     { start: 1, end: periodLen + 1, color: "var(--period)" },
-    { start: periodLen + 1, end: fertileStart, color: "var(--muted-foreground)" },
+    { start: periodLen + 1, end: fertileStart, color: "var(--fertile-soft)" },
     { start: fertileStart, end: fertileEnd, color: "var(--fertile)" },
     { start: fertileEnd, end: fertileEnd + 1, color: "var(--ovu-pred)" },
     { start: fertileEnd + 1, end: cycleLength + 1, color: "var(--ovu-conf)" },

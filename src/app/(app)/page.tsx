@@ -16,6 +16,22 @@ const EVENT_LABELS: Record<string, string> = {
   temp_rise: "Temp rise",
 };
 
+const EVENT_DOTS: Record<string, string> = {
+  period_start: "var(--period)",
+  period_end: "var(--period-soft)",
+  lh_surge: "var(--ovu-pred)",
+  temp_rise: "var(--ovu-conf)",
+};
+
+function todayPretty(): string {
+  const d = new Date();
+  return d.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 function todayISO() {
   return toAppDate(new Date().toISOString()) ?? new Date().toISOString().slice(0, 10);
 }
@@ -80,54 +96,47 @@ export default async function TodayPage() {
       ? "Medium confidence"
       : "Low confidence";
 
+  const confidenceDotColor =
+    prediction.confidence === "high"
+      ? "var(--fertile)"
+      : prediction.confidence === "medium"
+      ? "var(--ovu-conf)"
+      : "var(--muted-foreground)";
+
   return (
     <main className="flex flex-col gap-6 pb-4">
-      {/* Slim header */}
+      {/* Date as the hero header. Greeting demoted to a chip on the right. */}
       <header className="flex items-baseline justify-between px-5 pt-6">
-        <div>
-          <p className="text-sm text-muted-foreground">Hello, {firstName(userName)}</p>
-          <h1 className="sr-only">Today</h1>
-        </div>
-        {prediction.cycleDay !== null ? (
-          <span className="inline-flex items-center rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-foreground">
-            Cycle Day {prediction.cycleDay}
-          </span>
-        ) : null}
+        <h1 className="font-display text-2xl tracking-tight text-foreground">
+          {todayPretty()}
+        </h1>
+        <span className="text-[11px] text-muted-foreground">
+          Hi, {firstName(userName)}
+        </span>
       </header>
 
-      {/* Ring */}
-      <section className="px-2 pt-2">
+      {/* Ring with confidence/personalization caption directly underneath */}
+      <section className="flex flex-col items-center gap-2 px-2 pt-1">
         <CycleRing
           cycleDay={prediction.cycleDay}
           cycleLength={cycleLength}
           prediction={prediction}
         />
-      </section>
-
-      {/* Confidence row */}
-      <section className="flex flex-col items-center gap-1 px-5 text-center">
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
-        >
-          <span
-            aria-hidden
-            className="size-1.5 rounded-full"
-            style={{
-              backgroundColor:
-                prediction.confidence === "high"
-                  ? "var(--fertile)"
-                  : prediction.confidence === "medium"
-                  ? "var(--ovu-conf)"
-                  : "var(--muted-foreground)",
-            }}
-          />
-          {confidenceLabel}
-        </span>
-        {!prediction.isPersonalized ? (
-          <p className="text-[11px] text-muted-foreground">
-            Predictions improve after 2 cycles of data.
-          </p>
-        ) : null}
+        <div className="flex flex-col items-center gap-0.5 text-center">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full"
+              style={{ backgroundColor: confidenceDotColor }}
+            />
+            {confidenceLabel}
+          </span>
+          {!prediction.isPersonalized ? (
+            <p className="text-[11px] text-muted-foreground">
+              Predictions improve after 2 cycles of data.
+            </p>
+          ) : null}
+        </div>
       </section>
 
       {/* Quick actions */}
@@ -148,20 +157,38 @@ export default async function TodayPage() {
             {todaysEvents.map((e) => (
               <li
                 key={`e-${e.id}`}
-                className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm"
               >
-                <span className="text-foreground">
-                  {EVENT_LABELS[e.type] ?? e.type}
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    aria-hidden
+                    className="inline-block size-2.5 shrink-0 rounded-full"
+                    style={{
+                      backgroundColor:
+                        EVENT_DOTS[e.type] ?? "var(--muted-foreground)",
+                    }}
+                  />
+                  <span className="text-foreground">
+                    {EVENT_LABELS[e.type] ?? e.type}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {formatDateMDY(e.occurred_on)}
                 </span>
-                <span className="text-xs text-muted-foreground">{formatDateMDY(e.occurred_on)}</span>
               </li>
             ))}
             {todaysSymptoms.map((s) => (
               <li
                 key={`s-${s.id}`}
-                className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm"
               >
-                <span className="text-foreground">{s.name}</span>
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    aria-hidden
+                    className="inline-block size-2.5 shrink-0 rounded-full bg-muted-foreground"
+                  />
+                  <span className="text-foreground">{s.name}</span>
+                </div>
                 <span className="text-xs text-muted-foreground">
                   {s.severity?.value ?? "—"}
                 </span>

@@ -163,7 +163,10 @@ export function SymptomMultiSelect({
       />
 
       {count > 0 ? (
-        <div className="sticky bottom-24 z-30 mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur">
+        <div
+          className="sticky z-30 mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur"
+          style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 6rem)" }}
+        >
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <span className="inline-flex size-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
               {count}
